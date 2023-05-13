@@ -23,12 +23,15 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", (message) => {
-  console.log(
-    message.content,
-    "   ||  ",
-    message.createdAt.toDateString(),
-    "\n ------------------------"
-  );
+  // console.log(message);
+  message.bot
+    ? console.log(
+        "\n ------------------------",
+        message.content,
+        "   ||  ",
+        message.createdAt.toDateString()
+      )
+    : "";
   // console.log(message.createdAt.toDateString());
   // console.log(message.guildId);
 });
@@ -55,15 +58,18 @@ client.on("interactionCreate", async (interaction) => {
     };
 
     try {
+      await interaction.reply({
+        content: "```Loading...```",
+      });
       const response = await axios.request(options);
       // console.log(response.data.translated_text);
-      await interaction.reply({
-        content: response.data.translated_text,
+      await interaction.editReply({
+        content: `\`\`\`${response.data.translated_text}\`\`\``,
       });
     } catch (error) {
       console.error(error);
-      await interaction.reply({
-        content: "Translation failed!",
+      await interaction.editReply({
+        content: "```Translation failed!```",
       });
     }
   }
@@ -81,9 +87,46 @@ client.on("interactionCreate", async (interaction) => {
   //       "https://media4.giphy.com/media/26BoEeFJkz2eZUBcQ/giphy.gif?cid=ecf05e47d55n8ia84xuwc93rgbwwt6eaic8ahv1x15d6xvai&ep=v1_gifs_search&rid=giphy.gif&ct=g"
   //     );
   //   }
+  if (interaction.commandName === "weather") {
+    const options = {
+      method: "GET",
+      url: "https://weather-by-api-ninjas.p.rapidapi.com/v1/weather",
+      params: { city: interaction.options.getString("location") },
+      headers: {
+        "X-RapidAPI-Key": "6f36b8407fmsh5482f70a37c0fdap1d16c3jsn3b8ecac16907",
+        "X-RapidAPI-Host": "weather-by-api-ninjas.p.rapidapi.com",
+      },
+    };
+
+    try {
+      interaction.reply({
+        content: "```Loading...```",
+      });
+      const response = await axios.request(options);
+      // console.log(response.data);
+      interaction.editReply({
+        content: `\`\`\`Temperature: ${response.data.temp} \nFeels Like: ${response.data.feels_like} \nMin Temperature: ${response.data.min_temp} \nMax Temperature: ${response.data.max_temp} \nWind Speed: ${response.data.wind_speed}\`\`\``,
+      });
+    } catch (error) {
+      interaction.editReply({
+        content: "```Request Failed!```",
+      });
+      console.error(error);
+    }
+  }
 });
 
 async function main() {
+  const weatherCommand = new SlashCommandBuilder()
+    .setName("weather")
+    .setDescription("Get weather details of any place")
+    .addStringOption((option) =>
+      option
+        .setName("location")
+        .setDescription("Input the location you want to get weather report on")
+        .setRequired(true)
+    );
+
   const translateCommand = new SlashCommandBuilder()
     .setName("translate")
     .setDescription("Translate your texts from any language to any language")
@@ -129,7 +172,11 @@ async function main() {
         );
     });
 
-  const command = [orderCommand.toJSON(), translateCommand.toJSON()];
+  const command = [
+    orderCommand.toJSON(),
+    translateCommand.toJSON(),
+    weatherCommand.toJSON(),
+  ];
   //   console.log(command);
 
   try {
