@@ -1,6 +1,6 @@
 # DiscordBot_firstBot_practice
 
-Bot to translate between languages. Practice Repo
+Bot For Practice. Contains various commands (translate, order). Practice Repo
 
 # Create a .env file in the repo and input your credentials as follows
 
