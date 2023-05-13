@@ -27,19 +27,18 @@ client.on("ready", () => {
 //   console.log(message.createdAt.toDateString());
 //   console.log(message.guildId);
 // });
+
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === "ping") {
-    await interaction.reply(
-      "https://media4.giphy.com/media/26BoEeFJkz2eZUBcQ/giphy.gif?cid=ecf05e47d55n8ia84xuwc93rgbwwt6eaic8ahv1x15d6xvai&ep=v1_gifs_search&rid=giphy.gif&ct=g"
-    );
-  }
   if (interaction.commandName === "translate") {
-    console.log(interaction.options.data);
+    console.log(interaction.options.data.map((val) => val.value));
     const encodedParams = new URLSearchParams();
     encodedParams.set("q", interaction.options.getString("text"));
-    encodedParams.set("target", interaction.options.getString("translateto"));
+    encodedParams.set(
+      "target",
+      interaction.options.getString("outputlanguage")
+    );
     encodedParams.set("source", interaction.options.getString("inputlanguage"));
 
     const options = {
@@ -76,12 +75,36 @@ client.on("interactionCreate", async (interaction) => {
       }`,
     });
   }
+  //   if (interaction.commandName === "ping") {
+  //     await interaction.reply(
+  //       "https://media4.giphy.com/media/26BoEeFJkz2eZUBcQ/giphy.gif?cid=ecf05e47d55n8ia84xuwc93rgbwwt6eaic8ahv1x15d6xvai&ep=v1_gifs_search&rid=giphy.gif&ct=g"
+  //     );
+  //   }
   //   if (interaction.isChatInputCommand()) {
   //     console.log("Hey World");
   //   }
 });
 
 async function main() {
+  const translateCommand = new SlashCommandBuilder()
+    .setName("translate")
+    .setDescription("Translate your texts from any language to any language")
+    .addStringOption((option) =>
+      option.setName("text").setDescription("Input your text").setRequired(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("inputlanguage")
+        .setDescription("Your input text language?")
+        .setRequired(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("outputlanguage")
+        .setDescription("Your output text language?")
+        .setRequired(true)
+    );
+
   const orderCommand = new SlashCommandBuilder()
     .setName("order")
     .setDescription("Order your food!")
@@ -108,7 +131,8 @@ async function main() {
         );
     });
 
-  const command = [orderCommand.toJSON()];
+  const command = [orderCommand.toJSON(), translateCommand.toJSON()];
+  //   console.log(command);
 
   try {
     console.log("Started refreshing application (/) commands.");
