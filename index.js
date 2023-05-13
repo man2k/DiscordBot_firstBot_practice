@@ -27,6 +27,7 @@ client.on("ready", () => {
 //   console.log(message.createdAt.toDateString());
 //   console.log(message.guildId);
 // });
+//as
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
