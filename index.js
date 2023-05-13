@@ -32,7 +32,7 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "translate") {
-    console.log(interaction.options.data.map((val) => val.value));
+    // console.log(interaction.options.data.map((val) => val.value));
     const encodedParams = new URLSearchParams();
     encodedParams.set("from", interaction.options.getString("inputlanguage"));
     encodedParams.set("to", interaction.options.getString("outputlanguage"));
@@ -61,19 +61,6 @@ client.on("interactionCreate", async (interaction) => {
         content: "Translation failed!",
       });
     }
-
-    //   try {
-    //     const response = await axios.request(options);
-    //     //   console.log(response.data.data);
-    //     await interaction.reply({
-    //       content: response.data.data.translations[0].translatedText,
-    //     });
-    //   } catch (error) {
-    //     console.error(error);
-    //     await interaction.reply({
-    //       content: "Translation failed!",
-    //     });
-    //   }
   }
   if (interaction.commandName === "order") {
     await interaction.reply({
