@@ -23,7 +23,12 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", (message) => {
-  console.log(message.content, "   ||  ", message.createdAt.toDateString());
+  console.log(
+    message.content,
+    "   ||  ",
+    message.createdAt.toDateString(),
+    "\n ------------------------"
+  );
   // console.log(message.createdAt.toDateString());
   // console.log(message.guildId);
 });
