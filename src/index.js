@@ -80,9 +80,6 @@ client.on("interactionCreate", async (interaction) => {
   //       "https://media4.giphy.com/media/26BoEeFJkz2eZUBcQ/giphy.gif?cid=ecf05e47d55n8ia84xuwc93rgbwwt6eaic8ahv1x15d6xvai&ep=v1_gifs_search&rid=giphy.gif&ct=g"
   //     );
   //   }
-  //   if (interaction.isChatInputCommand()) {
-  //     console.log("Hey World");
-  //   }
 });
 
 async function main() {
