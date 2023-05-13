@@ -34,30 +34,26 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "translate") {
     console.log(interaction.options.data.map((val) => val.value));
     const encodedParams = new URLSearchParams();
-    encodedParams.set("q", interaction.options.getString("text"));
-    encodedParams.set(
-      "target",
-      interaction.options.getString("outputlanguage")
-    );
-    encodedParams.set("source", interaction.options.getString("inputlanguage"));
+    encodedParams.set("from", interaction.options.getString("inputlanguage"));
+    encodedParams.set("to", interaction.options.getString("outputlanguage"));
+    encodedParams.set("text", interaction.options.getString("text"));
 
     const options = {
       method: "POST",
-      url: "https://google-translate1.p.rapidapi.com/language/translate/v2",
+      url: "https://translo.p.rapidapi.com/api/v3/translate",
       headers: {
         "content-type": "application/x-www-form-urlencoded",
-        "Accept-Encoding": "application/gzip",
         "X-RapidAPI-Key": "6f36b8407fmsh5482f70a37c0fdap1d16c3jsn3b8ecac16907",
-        "X-RapidAPI-Host": "google-translate1.p.rapidapi.com",
+        "X-RapidAPI-Host": "translo.p.rapidapi.com",
       },
       data: encodedParams,
     };
 
     try {
       const response = await axios.request(options);
-      //   console.log(response.data.data);
+      // console.log(response.data.translated_text);
       await interaction.reply({
-        content: response.data.data.translations[0].translatedText,
+        content: response.data.translated_text,
       });
     } catch (error) {
       console.error(error);
@@ -65,6 +61,19 @@ client.on("interactionCreate", async (interaction) => {
         content: "Translation failed!",
       });
     }
+
+    //   try {
+    //     const response = await axios.request(options);
+    //     //   console.log(response.data.data);
+    //     await interaction.reply({
+    //       content: response.data.data.translations[0].translatedText,
+    //     });
+    //   } catch (error) {
+    //     console.error(error);
+    //     await interaction.reply({
+    //       content: "Translation failed!",
+    //     });
+    //   }
   }
   if (interaction.commandName === "order") {
     await interaction.reply({
