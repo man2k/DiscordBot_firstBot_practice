@@ -22,12 +22,11 @@ client.on("ready", () => {
   console.log("Bot has Logged-in as", client.user.tag);
 });
 
-// client.on("messageCreate", (message) => {
-//   console.log(message.content, "   ||  ", message.createdAt.toDateString());
-//   console.log(message.createdAt.toDateString());
-//   console.log(message.guildId);
-// });
-//as
+client.on("messageCreate", (message) => {
+  console.log(message.content, "   ||  ", message.createdAt.toDateString());
+  console.log(message.createdAt.toDateString());
+  console.log(message.guildId);
+});
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
