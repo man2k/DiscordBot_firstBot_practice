@@ -160,7 +160,13 @@ client.on("interactionCreate", async (interaction) => {
       const response = await axios.request(options);
       // console.log(response.data[0].meanings[0].definitions[0].definition);
       const replied = await interaction.editReply({
-        content: `\`\`\`Meaning: ${response.data[0].meanings[0].definitions[0].definition}\`\`\`\n\`\`\`Example use: ${response.data[0].meanings[0].definitions[0].example}\`\`\``,
+        content: `\`\`\`Meaning: ${
+          response.data[0].meanings[0].definitions[0].definition
+        }\`\`\`\n\`\`\`${
+          response.data[0].meanings[0].definitions[0].example
+            ? `Example use: ${response.data[0].meanings[0].definitions[0].example}`
+            : ""
+        }\`\`\``,
       });
       await replied.react("👍");
     } catch (error) {
