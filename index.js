@@ -23,13 +23,13 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", (message) => {
-  // console.log(message);
-  message.bot
+  // console.log(JSON.stringify(message.author.bot));
+  !message.author.bot
     ? console.log(
-        "\n ------------------------",
+        "\n------------------------\n",
         message.content,
-        "   ||  ",
-        message.createdAt.toDateString()
+        "  ||  ",
+        message.createdAt.toUTCString()
       )
     : "";
   // console.log(message.createdAt.toDateString());
@@ -73,15 +73,15 @@ client.on("interactionCreate", async (interaction) => {
       });
     }
   }
-  if (interaction.commandName === "order") {
-    await interaction.reply({
-      content: `You ordered ${interaction.options.get("food").value} ${
-        interaction.options?.get("drink")?.value
-          ? "& " + interaction.options?.get("drink")?.value
-          : ""
-      }`,
-    });
-  }
+  // if (interaction.commandName === "order") {
+  //   await interaction.reply({
+  //     content: `You ordered ${interaction.options.get("food").value} ${
+  //       interaction.options?.get("drink")?.value
+  //         ? "& " + interaction.options?.get("drink")?.value
+  //         : ""
+  //     }`,
+  //   });
+  // }
   //   if (interaction.commandName === "ping") {
   //     await interaction.reply(
   //       "https://media4.giphy.com/media/26BoEeFJkz2eZUBcQ/giphy.gif?cid=ecf05e47d55n8ia84xuwc93rgbwwt6eaic8ahv1x15d6xvai&ep=v1_gifs_search&rid=giphy.gif&ct=g"
@@ -99,24 +99,92 @@ client.on("interactionCreate", async (interaction) => {
     };
 
     try {
-      interaction.reply({
-        content: "```Loading...```",
+      await interaction.reply({
+        content: `\`\`\`Looking for ${interaction.options.getString(
+          "location"
+        )}...\`\`\``,
       });
       const response = await axios.request(options);
       // console.log(response.data);
-      interaction.editReply({
-        content: `\`\`\`Temperature: ${response.data.temp} \nFeels Like: ${response.data.feels_like} \nMin Temperature: ${response.data.min_temp} \nMax Temperature: ${response.data.max_temp} \nWind Speed: ${response.data.wind_speed}\`\`\``,
+      const temp = Number(response.data.temp);
+      const replied = await interaction.editReply({
+        content: `\`\`\`Location: ${interaction.options.getString(
+          "location"
+        )}\nTemperature: ${temp}\nFeels Like: ${
+          response.data.feels_like
+        }\nMin Temperature: ${response.data.min_temp}\nMax Temperature: ${
+          response.data.max_temp
+        }\nWind Speed: ${response.data.wind_speed}\`\`\``,
       });
+      if (temp > 28 && temp < 32) {
+        await replied.react("🌞");
+      } else if (temp > 32) {
+        await replied.react("🥵");
+      } else if (temp < 28 && temp > 22) {
+        await replied.react("🆒");
+      } else if (temp < 22 && temp > 10) {
+        await replied.react("❄️");
+      } else if (temp < 10) {
+        await replied.react("🥶");
+      }
+      // if(response.data.wind_speed)
     } catch (error) {
-      interaction.editReply({
-        content: "```Request Failed!```",
+      if (error.response.status === 400) {
+        const replied = await interaction.editReply({
+          content: "```Location not found !```",
+        });
+        replied.react("🙃");
+      } else {
+        const replied = await interaction.editReply({
+          content: "```Request failed !```",
+        });
+        replied.react("❌");
+      }
+      // console.error(error);
+    }
+  }
+  if (interaction.commandName === "meaning") {
+    const options = {
+      method: "GET",
+      url: `https://api.dictionaryapi.dev/api/v2/entries/en/${interaction.options.getString(
+        "word"
+      )}`,
+    };
+
+    try {
+      await interaction.reply({
+        content: `\`\`\`Searching the meaning of ${interaction.options.getString(
+          "word"
+        )}...\`\`\``,
       });
+      const response = await axios.request(options);
+      // console.log(response.data[0].meanings[0].definitions[0].definition);
+      const replied = await interaction.editReply({
+        content: `\`\`\`Meaning: ${response.data[0].meanings[0].definitions[0].definition}\`\`\`\n\`\`\`Example use: ${response.data[0].meanings[0].definitions[0].example}\`\`\``,
+      });
+      await replied.react("👍");
+    } catch (error) {
+      if (error.response.status === 404) {
+        const replied = await interaction.editReply({
+          content: `\`\`\`Difinition of ${interaction.options.getString(
+            "word"
+          )} not found\`\`\``,
+        });
+        replied.react("🙃");
+      }
       console.error(error);
     }
   }
 });
 
 async function main() {
+  const meaningCommand = new SlashCommandBuilder()
+    .setName("meaning")
+    .setDescription("Get meaning of any english word.")
+    .addStringOption((option) =>
+      option.setName("word").setDescription("Input your word").setRequired(true)
+    );
+
   const weatherCommand = new SlashCommandBuilder()
     .setName("weather")
     .setDescription("Get weather details of any place")
@@ -146,36 +214,37 @@ async function main() {
         .setRequired(true)
     );
 
-  const orderCommand = new SlashCommandBuilder()
-    .setName("order")
-    .setDescription("Order your food!")
-    .addStringOption((option) => {
-      return option
-        .setName("food")
-        .setDescription("Select your Food")
-        .setRequired(true)
-        .setChoices(
-          { name: "Cake", value: "Cake" },
-          { name: "Burger", value: "Burger" },
-          { name: "Pizza", value: "Pizza" }
-        );
-    })
-    .addStringOption((option) => {
-      return option
-        .setName("drink")
-        .setDescription("Select your drink")
-        .setRequired(false)
-        .setChoices(
-          { name: "Water", value: "Water" },
-          { name: "Coke", value: "Coke" },
-          { name: "Mirinda", value: "Mirinda" }
-        );
-    });
+  // const orderCommand = new SlashCommandBuilder()
+  //   .setName("order")
+  //   .setDescription("Order your food!")
+  //   .addStringOption((option) => {
+  //     return option
+  //       .setName("food")
+  //       .setDescription("Select your Food")
+  //       .setRequired(true)
+  //       .setChoices(
+  //         { name: "Cake", value: "Cake" },
+  //         { name: "Burger", value: "Burger" },
+  //         { name: "Pizza", value: "Pizza" }
+  //       );
+  //   })
+  //   .addStringOption((option) => {
+  //     return option
+  //       .setName("drink")
+  //       .setDescription("Select your drink")
+  //       .setRequired(false)
+  //       .setChoices(
+  //         { name: "Water", value: "Water" },
+  //         { name: "Coke", value: "Coke" },
+  //         { name: "Mirinda", value: "Mirinda" }
+  //       );
+  //   });
 
   const command = [
-    orderCommand.toJSON(),
+    // orderCommand.toJSON(),
     translateCommand.toJSON(),
     weatherCommand.toJSON(),
+    meaningCommand.toJSON(),
   ];
   //   console.log(command);
 
