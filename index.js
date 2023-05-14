@@ -59,13 +59,15 @@ client.on("interactionCreate", async (interaction) => {
 
     try {
       await interaction.reply({
-        content: "```Loading...```",
+        content: "```Translating...```",
       });
       const response = await axios.request(options);
       // console.log(response.data.translated_text);
-      await interaction.editReply({
+      const replied = await interaction.editReply({
         content: `\`\`\`${response.data.translated_text}\`\`\``,
       });
+
+      await replied.react("✅");
     } catch (error) {
       console.error(error);
       await interaction.editReply({
