@@ -162,11 +162,11 @@ client.on("interactionCreate", async (interaction) => {
       const replied = await interaction.editReply({
         content: `\`\`\`Meaning: ${
           response.data[0].meanings[0].definitions[0].definition
-        }\`\`\`\n\`\`\`${
+        }\`\`\`\n${
           response.data[0].meanings[0].definitions[0].example
-            ? `Example use: ${response.data[0].meanings[0].definitions[0].example}`
+            ? `\`\`\`Example use: ${response.data[0].meanings[0].definitions[0].example}\`\`\``
             : ""
-        }\`\`\``,
+        }`,
       });
       await replied.react("👍");
     } catch (error) {
