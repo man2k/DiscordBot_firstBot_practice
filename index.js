@@ -116,7 +116,23 @@ client.on("interactionCreate", async (interaction) => {
       // console.log(JSON.stringify(response.data.nearest_area));
       const temp = Number(response.data.current_condition[0].temp_C);
       const replied = await interaction.editReply({
-        content: `\`\`\`Location: ${response.data.nearest_area[0].areaName[0].value}\nTemperature: ${temp}\nFeels Like: ${response.data.current_condition[0].FeelsLikeC}\nHumidity: ${response.data.current_condition[0].humidity}\nWind Speed: ${response.data.current_condition[0].windspeedKmph}\nWeather Description: ${response.data.current_condition[0].weatherDesc[0].value}\nPrecipitation: ${response.data.current_condition[0].precipInches} Inches\nVisibility: ${response.data.current_condition[0].visibility}\`\`\``,
+        content: `\`\`\`Location: ${interaction.options.getString(
+          "location"
+        )}\nNearby Location: ${
+          response.data.nearest_area[0].areaName[0].value
+        }\nTemperature: ${temp}\nFeels Like: ${
+          response.data.current_condition[0].FeelsLikeC
+        }\nHumidity: ${
+          response.data.current_condition[0].humidity
+        }\nWind Speed: ${
+          response.data.current_condition[0].windspeedKmph
+        }\nWeather Description: ${
+          response.data.current_condition[0].weatherDesc[0].value
+        }\nPrecipitation: ${
+          response.data.current_condition[0].precipInches
+        } Inches\nVisibility: ${
+          response.data.current_condition[0].visibility
+        }\`\`\``,
       });
       if (temp > 28 && temp < 32) {
         await replied.react("🌞");
