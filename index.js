@@ -20,11 +20,10 @@ const client = new Client({
 
 const rest = new REST({ version: "10" }).setToken(process.env.DISC_TOKEN);
 
-client.login(process.env.DISC_TOKEN);
-
 client.on("ready", () => {
   console.log("Bot has Logged-in as", client.user.tag);
 });
+client.login(process.env.DISC_TOKEN);
 
 client.on("messageCreate", (message) => {
   // console.log(JSON.stringify(message.author.bot));
