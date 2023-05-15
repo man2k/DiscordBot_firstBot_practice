@@ -2,7 +2,11 @@ import { Client, GatewayIntentBits } from "discord.js";
 import * as dotenv from "dotenv";
 import { REST, Routes } from "discord.js";
 import axios from "axios";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import {
+  meaningCommand,
+  translateCommand,
+  weatherCommand,
+} from "./commands/index.js";
 
 dotenv.config();
 
@@ -186,75 +190,7 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 async function main() {
-  const meaningCommand = new SlashCommandBuilder()
-    .setName("meaning")
-    .setDescription("Get meaning of any english word.")
-    .addStringOption((option) =>
-      option.setName("word").setDescription("Input your word").setRequired(true)
-    );
-
-  const weatherCommand = new SlashCommandBuilder()
-    .setName("weather")
-    .setDescription("Get weather details of any place")
-    .addStringOption((option) =>
-      option
-        .setName("location")
-        .setDescription("Input the location you want to get weather report on")
-        .setRequired(true)
-    );
-
-  const translateCommand = new SlashCommandBuilder()
-    .setName("translate")
-    .setDescription("Translate your texts from any language to any language")
-    .addStringOption((option) =>
-      option.setName("text").setDescription("Input your text").setRequired(true)
-    )
-    .addStringOption((option) =>
-      option
-        .setName("inputlanguage")
-        .setDescription("Your input text language?")
-        .setRequired(true)
-    )
-    .addStringOption((option) =>
-      option
-        .setName("outputlanguage")
-        .setDescription("Your output text language?")
-        .setRequired(true)
-    );
-
-  // const orderCommand = new SlashCommandBuilder()
-  //   .setName("order")
-  //   .setDescription("Order your food!")
-  //   .addStringOption((option) => {
-  //     return option
-  //       .setName("food")
-  //       .setDescription("Select your Food")
-  //       .setRequired(true)
-  //       .setChoices(
-  //         { name: "Cake", value: "Cake" },
-  //         { name: "Burger", value: "Burger" },
-  //         { name: "Pizza", value: "Pizza" }
-  //       );
-  //   })
-  //   .addStringOption((option) => {
-  //     return option
-  //       .setName("drink")
-  //       .setDescription("Select your drink")
-  //       .setRequired(false)
-  //       .setChoices(
-  //         { name: "Water", value: "Water" },
-  //         { name: "Coke", value: "Coke" },
-  //         { name: "Mirinda", value: "Mirinda" }
-  //       );
-  //   });
-
-  const command = [
-    // orderCommand.toJSON(),
-    translateCommand.toJSON(),
-    weatherCommand.toJSON(),
-    meaningCommand.toJSON(),
-  ];
-  //   console.log(command);
+  const command = [translateCommand, weatherCommand, meaningCommand];
 
   try {
     console.log("Started refreshing application (/) commands.");
