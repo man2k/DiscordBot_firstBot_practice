@@ -96,8 +96,10 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "weather") {
     const options = {
       method: "GET",
-      url: "https://weather-by-api-ninjas.p.rapidapi.com/v1/weather",
-      params: { city: interaction.options.getString("location") },
+      url: `https://wttr.in/${interaction.options.getString(
+        "location"
+      )}?format=j1`,
+      // params: { city: interaction.options.getString("location") },
       headers: {
         "X-RapidAPI-Key": "6f36b8407fmsh5482f70a37c0fdap1d16c3jsn3b8ecac16907",
         "X-RapidAPI-Host": "weather-by-api-ninjas.p.rapidapi.com",
@@ -111,16 +113,10 @@ client.on("interactionCreate", async (interaction) => {
         )}...\`\`\``,
       });
       const response = await axios.request(options);
-      // console.log(response.data);
-      const temp = Number(response.data.temp);
+      // console.log(JSON.stringify(response.data.nearest_area));
+      const temp = Number(response.data.current_condition[0].temp_C);
       const replied = await interaction.editReply({
-        content: `\`\`\`Location: ${interaction.options.getString(
-          "location"
-        )}\nTemperature: ${temp}\nFeels Like: ${
-          response.data.feels_like
-        }\nMin Temperature: ${response.data.min_temp}\nMax Temperature: ${
-          response.data.max_temp
-        }\nWind Speed: ${response.data.wind_speed}\`\`\``,
+        content: `\`\`\`Location: ${response.data.nearest_area[0].areaName[0].value}\nTemperature: ${temp}\nFeels Like: ${response.data.current_condition[0].FeelsLikeC}\nHumidity: ${response.data.current_condition[0].humidity}\nWind Speed: ${response.data.current_condition[0].windspeedKmph}\nWeather Description: ${response.data.current_condition[0].weatherDesc[0].value}\nPrecipitation: ${response.data.current_condition[0].precipInches} Inches\nVisibility: ${response.data.current_condition[0].visibility}\`\`\``,
       });
       if (temp > 28 && temp < 32) {
         await replied.react("🌞");
@@ -135,7 +131,7 @@ client.on("interactionCreate", async (interaction) => {
       }
       // if(response.data.wind_speed)
     } catch (error) {
-      if (error.response.status === 400) {
+      if (error.response.status === 404) {
         const replied = await interaction.editReply({
           content: "```Location not found !```",
         });
